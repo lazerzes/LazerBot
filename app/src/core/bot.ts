@@ -8,20 +8,23 @@ export class Bot {
   private readonly token: string;
 
   public static commands: Map<string, Command>;
+  public static commandPrefix: string = '!';
 
   constructor(
     token: string,
+    commandPrefix?: string,
   ) {
     Bot.client = new Client();
     this.token = token;
     Bot.commands = new Map<string, Command>();
+    Bot.commandPrefix = commandPrefix ?? '!'
   }
 
   public onMessage(message: Message): void {
 
-    if (message.content[0] === '!') {
+    if (message.content.slice(0, Bot.commandPrefix.length) === Bot.commandPrefix) {
       const args = message.content.match(/(".*?"|[^"\s]+)+(?=\s*|\s*$)/g);
-      const command = Bot.findCommand(args[0].slice(1));
+      const command = Bot.findCommand(args[0].slice(Bot.commandPrefix.length));
       const runner = command?.runner;
       if (runner) {
         runner(Bot.client, message, args);

@@ -6,7 +6,7 @@ main();
 
 function main(): void {
 
-  const bot = new Bot(process.env.TOKEN);
+  const bot = new Bot(process.env.TOKEN, process.env.COMMAND_PREFIX);
 
   bot.loadPlugins([
     new AdminPlugin(),
