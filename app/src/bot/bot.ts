@@ -86,8 +86,14 @@ export class Bot {
 
   }
 
-  // tslint:disable-next-line: max-line-length
-  private registerStorageBuckets(storageBuckets: { bucketId: string, bucket: Map<string, any>, onAddHandler?: (key: string, obj: any) => void }[]): void {
+  private registerStorageBuckets(
+    storageBuckets: {
+      bucketId: string,
+      bucket: Map<string, any>,
+      onAddHandler?: (key: string, obj: any) => void
+    }[]
+  ): void {
+
     storageBuckets.forEach((storageBucket: {
       bucketId: string,
       bucket: Map<string, any>,
@@ -103,6 +109,7 @@ export class Bot {
       }
 
     });
+
   }
 
   private registerCommands(commands: Command[], pluginId: string): void {
