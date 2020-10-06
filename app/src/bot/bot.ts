@@ -167,7 +167,7 @@ export class Bot {
 
     const fs = require('fs');
     fs.writeFile(path, JSON.stringify(persist, null, 2), (err: any) => {
-      if (err) { throw err; }
+      if (err) { console.error(err); }
       console.log('Data written to file');
     });
 
