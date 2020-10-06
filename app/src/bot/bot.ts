@@ -33,10 +33,12 @@ export class Bot {
   }
 
   public onMessage(message: Message): void {
-    
-    Bot.onMessageHandlers.forEach((callback: (message: Message) => void) => {
-      callback(message);
-    });
+   
+    if (message.author.id !== Bot.client.user.id) {
+      Bot.onMessageHandlers.forEach((callback: (message: Message) => void) => {
+        callback(message);
+      });
+    }
 
   }
 
@@ -71,7 +73,7 @@ export class Bot {
 
   public loadPlugins(plugins: IPlugin[]): void {
     plugins.forEach((plugin: IPlugin) => {
-     this.loadPlugin(plugin);
+      this.loadPlugin(plugin);
     });
   }
 
@@ -84,7 +86,7 @@ export class Bot {
 
   }
 
-  private registerStorageBuckets(storageBuckets: {bucketId: string, bucket: Map<string, any>, onAddHandler?: (key: string, obj: any) => void}[]): void {
+  private registerStorageBuckets(storageBuckets: { bucketId: string, bucket: Map<string, any>, onAddHandler?: (key: string, obj: any) => void }[]): void {
     storageBuckets.forEach((storageBucket: {
       bucketId: string,
       bucket: Map<string, any>,
@@ -103,13 +105,13 @@ export class Bot {
   }
 
   private registerCommands(commands: Command[], pluginId: string) {
-    commands.map(command => ({...command, srcPlugin: pluginId})).forEach( (command: Command) =>
+    commands.map(command => ({ ...command, srcPlugin: pluginId })).forEach((command: Command) =>
       this.addDataToBucket('command', command.call, command)
     );
 
   }
 
-  private addDataToBucket(bucketId: string, dataId: string, data: any, options?: {failIfNoBucket?: boolean}): void {
+  private addDataToBucket(bucketId: string, dataId: string, data: any, options?: { failIfNoBucket?: boolean }): void {
     if (!Bot.storageBuckets.has(bucketId)) {
       if (options?.failIfNoBucket) {
         throw new Error(`Could not add data to ${bucketId}, does not exist.`)
@@ -129,7 +131,7 @@ export class Bot {
         console.warn(`Could not add data(${dataId}) to ${bucketId}, duplicate dataId. (skipped)`);
       }
     }
-    
+
   }
 
 }
