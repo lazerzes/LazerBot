@@ -1,8 +1,9 @@
 import { Client, Message } from 'discord.js';
 import { Command } from '../../command/command';
-import { LazerPlugin } from '../../core/lazerplugin';
 
-export class AdminPlugin implements LazerPlugin {
+import { IPlugin } from '../../bot/plugin.interface';
+
+export class AdminPlugin implements IPlugin {
 
   pluginId: string;
   commands: Command[];
@@ -22,7 +23,7 @@ export class AdminPlugin implements LazerPlugin {
   }
   
 
-  pingCommand(client: Client, message: Message, args: string[]): void {
+  pingCommand(message: Message, args: string[]): void {
     message.channel.send( {
       content: 'pong'
     })

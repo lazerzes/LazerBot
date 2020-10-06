@@ -6,7 +6,7 @@ export interface Command {
 
   helpText?: string;
 
-  runner?(client: Client, message: Message, args: string[]): void;
+  runner?(message: Message, args: string[]): void;
 
   srcPlugin?: string;
 

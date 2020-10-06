@@ -1,4 +1,4 @@
-import { Bot } from './core/bot';
+import { Bot } from './bot/bot';
 import { AdminPlugin } from './plugins/admin/admin.plugin';
 
 require('dotenv').config();
