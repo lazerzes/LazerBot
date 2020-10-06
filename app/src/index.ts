@@ -20,10 +20,17 @@ function main(): void {
     (error) => console.log('error while logging in', error)
   );
 
+  process.on('SIGINT', () => {
+    console.log('intercept interrupt');
+
+    process.exit();
+
+  });
+
   process.on('beforeExit', () => {
     console.log('intercept exit');
 
     process.exit();
-  })
+  });
 
 }
