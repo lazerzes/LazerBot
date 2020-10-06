@@ -167,6 +167,9 @@ export class Bot {
   }
 
   public loadPersistentData(path: string): void {
+
+    console.log('loading persistent data...');
+
     try {
       const fs = require('fs');
       const rawData = fs.readFileSync(path);
@@ -179,6 +182,9 @@ export class Bot {
     } catch (err) {
       // pass
     }
+
+    console.log('persistent data loaded');
+
   }
 
 }
