@@ -42,7 +42,7 @@ export class CorePlugin implements IPlugin{
   }
 
   public static commandFinder(call: string): Command | undefined {
-    const command = CorePlugin.CommandBucket.get(call) ?? undefined;
+    const command = CorePlugin.CommandBucket[call] ?? undefined;
     return command?.redirect ? CorePlugin.commandFinder(command.redirect) : command;
   }
 
