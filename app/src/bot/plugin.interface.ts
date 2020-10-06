@@ -7,6 +7,7 @@ export interface IPlugin {
   storageBuckets?: {
     bucketId: string;
     bucket: Map<string, any>;
+    shouldPersist: boolean;
     onAddHandler?: (key: string, object: any) => void;
   }[];
 

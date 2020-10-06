@@ -6,6 +6,20 @@ main();
 
 function main(): void {
 
+  process.on('SIGINT', () => {
+
+    doDataPersist(bot);
+
+    process.exit();
+  });
+
+  process.on('beforeExit', () => {
+
+    doDataPersist(bot);
+
+    process.exit();
+  });
+
   const bot = new Bot(process?.env?.TOKEN ?? 'no token', process?.env?.COMMAND_PREFIX);
 
   bot.loadPlugins([
@@ -20,16 +34,8 @@ function main(): void {
     (error) => console.log('error while logging in', error)
   );
 
-  process.on('SIGINT', () => {
-    process.exit();
-  });
-
-  process.on('beforeExit', () => {
-    process.exit();
-  });
-
 }
 
 function doDataPersist(bot: Bot): void {
-
+  bot.savePersistentData('');
 }

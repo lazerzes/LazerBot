@@ -21,6 +21,7 @@ export class CorePlugin implements IPlugin{
     {
       bucketId: 'command',
       bucket: CorePlugin.CommandBucket,
+      shouldPersist: false,
       onAddHandler: CorePlugin.commandAddHandler,
     }
   ];

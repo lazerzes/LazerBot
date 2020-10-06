@@ -7,6 +7,7 @@ export class Bot {
   private static onMessageHandlers: ((message: Message) => void)[];
 
   private static storageBuckets: Map<string, {
+    shouldPersist: boolean,
     bucket: Map<string, any>,
     onAddHandler?: (key: string, obj: any) => void;
   }>;
@@ -25,6 +26,7 @@ export class Bot {
     this.token = token;
     Bot.storageBuckets = new Map<string, {
       bucket: Map<string, any>,
+      shouldPersist: boolean,
       onAddHandler?: (key: string, obj: any) => void
     }>();
     Bot.onMessageHandlers = [];
@@ -90,6 +92,7 @@ export class Bot {
     storageBuckets: {
       bucketId: string,
       bucket: Map<string, any>,
+      shouldPersist: boolean,
       onAddHandler?: (key: string, obj: any) => void
     }[]
   ): void {
@@ -97,6 +100,7 @@ export class Bot {
     storageBuckets.forEach((storageBucket: {
       bucketId: string,
       bucket: Map<string, any>,
+      shouldPersist: boolean,
       onAddHandler?: (key: string, obj: any) => void
     }) => {
       if (Bot.storageBuckets.has(storageBucket.bucketId)) {
@@ -104,6 +108,7 @@ export class Bot {
       } else {
         Bot.storageBuckets.set(storageBucket.bucketId, {
           bucket: storageBucket.bucket,
+          shouldPersist: storageBucket.shouldPersist,
           onAddHandler: storageBucket.onAddHandler
         });
       }
@@ -139,6 +144,30 @@ export class Bot {
         console.warn(`Could not add data(${dataId}) to ${bucketId}, duplicate dataId. (skipped)`);
       }
     }
+
+  }
+
+  public savePersistentData(path: string): void {
+
+    const persist: { [key: string]: Map<string, any>} = {};
+
+    Array.from(Bot.storageBuckets.entries()).forEach(
+      ((value: [string, {
+        shouldPersist: boolean,
+        bucket: Map<string, any>
+        onAddHandler?: (key: string, obj: any) => void
+      }]) => {
+        if (value[1].shouldPersist) {
+          persist[value[0]] = value[1].bucket;
+        }
+      })
+    );
+
+    console.log('final persist', persist);
+
+  }
+
+  public loadPersistentData(path: string): void {
 
   }
 
