@@ -31,7 +31,7 @@ function main(): void {
 
   bot.setup();
 
-  bot.loadPersistentData(persistFile);
+  // bot.loadPersistentData(persistFile);
 
   bot.login().then(
     () => console.log('logged in')
