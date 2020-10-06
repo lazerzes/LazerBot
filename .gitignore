@@ -2,3 +2,4 @@
 node_modules
 dist
 persist.json
+bot-persist.json
