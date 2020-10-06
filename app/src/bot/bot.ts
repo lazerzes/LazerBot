@@ -64,10 +64,10 @@ export class Bot {
     }
 
     if (plugin.commands) {
-      this.registerCommands(plugin.commands, plugin.pluginId)
+      this.registerCommands(plugin.commands, plugin.pluginId);
     }
 
-    console.log('%c %s', 'color: green', `${plugin.pluginId} loaded`)
+    console.log(`${plugin.pluginId} loaded`)
 
   }
 
@@ -108,6 +108,7 @@ export class Bot {
     commands.map(command => ({...command, srcPlugin: pluginId})).forEach( (command: Command) =>
       this.addDataToBucket('command', command.call, command)
     );
+
   }
 
   private addDataToBucket(bucketId: string, dataId: string, data: any, options?: {failIfNoBucket?: boolean}): void {
@@ -120,7 +121,7 @@ export class Bot {
       }
     }
 
-    const bucket = Bot.storageBuckets.get('bucketId');
+    const bucket = Bot.storageBuckets.get(bucketId);
     if (bucket?.onAddHandler) {
       bucket.onAddHandler(dataId, data);
     } else {
