@@ -4,33 +4,33 @@ import { IPlugin } from './../../bot/plugin.interface';
 
 export class CorePlugin implements IPlugin{
 
-  private static CommandBucket = new Map<string, Command>()
 
-  pluginId: string = 'core';
-  
+  constructor(
+    commandPrefix?: string
+  ) {
+    CorePlugin.commandPrefix = commandPrefix ? commandPrefix : CorePlugin.commandPrefix;
+  }
+
+  private static CommandBucket = new Map<string, Command>();
+
+  private static commandPrefix = '!';
+
+  pluginId = 'core';
+
   storageBuckets = [
     {
       bucketId: 'command',
       bucket: CorePlugin.CommandBucket,
       onAddHandler: CorePlugin.commandAddHandler,
     }
-  ]
+  ];
 
   onMessageHandlers = [CorePlugin.commandHandler];
-
-  private static commandPrefix: string = '!';
-
-
-  constructor(
-    commandPrefix?: string
-  ) {
-    CorePlugin.commandPrefix = commandPrefix ? commandPrefix : CorePlugin.commandPrefix;
-  };
 
 
   public static commandHandler(message: Message): void {
     if (message.content.slice(0, CorePlugin.commandPrefix.length) === CorePlugin.commandPrefix) {
-      const args = message.content.match(/(".*?"|[^"\s]+)+(?=\s*|\s*$)/g);
+      const args = message.content.match(/(".*?"|[^"\s]+)+(?=\s*|\s*$)/g) ?? [];
       const command = CorePlugin.commandFinder(args[0].slice(CorePlugin.commandPrefix.length));
       const runner = command?.runner;
       if (runner) {
@@ -44,7 +44,7 @@ export class CorePlugin implements IPlugin{
     return command?.redirect ? CorePlugin.commandFinder(command.redirect) : command;
   }
 
-  public static commandAddHandler(call: string, command: Command) {
+  public static commandAddHandler(call: string, command: Command): void {
     call = CorePlugin.CommandBucket.has(call) ? `${command.srcPlugin}:${call}` : call;
     if (CorePlugin.CommandBucket.has(call)) {
       console.warn(`Command with call(${call}) from ${command.srcPlugin} could not be registered, duplicate call (skipped).`);

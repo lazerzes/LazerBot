@@ -6,7 +6,7 @@ main();
 
 function main(): void {
 
-  const bot = new Bot(process.env.TOKEN, process.env.COMMAND_PREFIX);
+  const bot = new Bot(process?.env?.TOKEN ?? 'no token', process?.env?.COMMAND_PREFIX);
 
   bot.loadPlugins([
     new AdminPlugin(),
@@ -21,16 +21,15 @@ function main(): void {
   );
 
   process.on('SIGINT', () => {
-    console.log('intercept interrupt');
-
     process.exit();
-
   });
 
   process.on('beforeExit', () => {
-    console.log('intercept exit');
-
     process.exit();
   });
+
+}
+
+function doDataPersist(bot: Bot): void {
 
 }

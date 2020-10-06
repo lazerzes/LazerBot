@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import { Command } from "../command/command";
+import { Command } from '../command/command';
 
 export interface IPlugin {
 

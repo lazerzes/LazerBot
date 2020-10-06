@@ -1,13 +1,9 @@
 import { CorePlugin } from './../plugins/core/core.plugin';
 import { IPlugin } from './plugin.interface';
-import { Client, Message } from "discord.js";
-import { Command } from "../command/command";
+import { Client, Message } from 'discord.js';
+import { Command } from '../command/command';
 
 export class Bot {
-
-  private static client: Client;
-  private readonly token: string;
-
   private static onMessageHandlers: ((message: Message) => void)[];
 
   private static storageBuckets: Map<string, {
@@ -16,6 +12,10 @@ export class Bot {
   }>;
 
   private static pluginIds: string[];
+
+
+  private static client: Client;
+  private readonly token: string;
 
   constructor(
     token: string,
@@ -26,15 +26,15 @@ export class Bot {
     Bot.storageBuckets = new Map<string, {
       bucket: Map<string, any>,
       onAddHandler?: (key: string, obj: any) => void
-    }>()
+    }>();
     Bot.onMessageHandlers = [];
     Bot.pluginIds = [];
     this.loadPlugin(new CorePlugin(commandPrefix));
   }
 
   public onMessage(message: Message): void {
-   
-    if (message.author.id !== Bot.client.user.id) {
+
+    if (message.author.id !== Bot?.client?.user?.id ?? '') {
       Bot.onMessageHandlers.forEach((callback: (message: Message) => void) => {
         callback(message);
       });
@@ -42,8 +42,8 @@ export class Bot {
 
   }
 
-  public registerOnMessageHandler(_callback: (message: Message) => void) {
-    Bot.onMessageHandlers.push(_callback);
+  public registerOnMessageHandler(callback: (message: Message) => void): void {
+    Bot.onMessageHandlers.push(callback);
   }
 
 
@@ -67,7 +67,7 @@ export class Bot {
       this.registerCommands(plugin.commands, plugin.pluginId);
     }
 
-    console.log(`${plugin.pluginId} loaded`)
+    console.log(`${plugin.pluginId} loaded`);
 
   }
 
@@ -86,11 +86,12 @@ export class Bot {
 
   }
 
+  // tslint:disable-next-line: max-line-length
   private registerStorageBuckets(storageBuckets: { bucketId: string, bucket: Map<string, any>, onAddHandler?: (key: string, obj: any) => void }[]): void {
     storageBuckets.forEach((storageBucket: {
       bucketId: string,
       bucket: Map<string, any>,
-      onAddHandler: (key: string, obj: any) => void
+      onAddHandler?: (key: string, obj: any) => void
     }) => {
       if (Bot.storageBuckets.has(storageBucket.bucketId)) {
         throw new Error(`Duplicate Bucket Ids are not allowed, ${storageBucket.bucketId} is already taken`);
@@ -98,13 +99,13 @@ export class Bot {
         Bot.storageBuckets.set(storageBucket.bucketId, {
           bucket: storageBucket.bucket,
           onAddHandler: storageBucket.onAddHandler
-        })
+        });
       }
 
-    })
+    });
   }
 
-  private registerCommands(commands: Command[], pluginId: string) {
+  private registerCommands(commands: Command[], pluginId: string): void {
     commands.map(command => ({ ...command, srcPlugin: pluginId })).forEach((command: Command) =>
       this.addDataToBucket('command', command.call, command)
     );
@@ -114,7 +115,7 @@ export class Bot {
   private addDataToBucket(bucketId: string, dataId: string, data: any, options?: { failIfNoBucket?: boolean }): void {
     if (!Bot.storageBuckets.has(bucketId)) {
       if (options?.failIfNoBucket) {
-        throw new Error(`Could not add data to ${bucketId}, does not exist.`)
+        throw new Error(`Could not add data to ${bucketId}, does not exist.`);
       } else {
         console.warn(`Could not add data to ${bucketId}, does not exist. (skipped)`);
         return;

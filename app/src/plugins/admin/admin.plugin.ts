@@ -21,12 +21,11 @@ export class AdminPlugin implements IPlugin {
       }
     ];
   }
-  
 
   pingCommand(message: Message, args: string[]): void {
     message.channel.send( {
       content: 'pong'
-    })
+    });
   }
 
 }

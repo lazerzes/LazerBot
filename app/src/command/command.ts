@@ -6,8 +6,8 @@ export interface Command {
 
   helpText?: string;
 
-  runner?(message: Message, args: string[]): void;
-
   srcPlugin?: string;
+
+  runner?(message: Message, args: string[]): void;
 
 }
