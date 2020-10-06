@@ -167,10 +167,14 @@ export class Bot {
   }
 
   public loadPersistentData(path: string): void {
-    const fs = require('fs');
-    const rawData = fs.readFileSync(path);
-    const parsed = JSON.parse(rawData);
-    console.log(parsed);
+    try {
+      const fs = require('fs');
+      const rawData = fs.readFileSync(path);
+      const parsed = JSON.parse(rawData);
+      console.log(parsed);
+    } catch (err) {
+      // pass
+    }
   }
 
 }
