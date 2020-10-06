@@ -1,3 +1,4 @@
+import { Command } from './../../command/command';
 import { Message } from 'discord.js';
 import { Command } from '../../command/command';
 import { IPlugin } from './../../bot/plugin.interface';
@@ -11,7 +12,7 @@ export class CorePlugin implements IPlugin{
     CorePlugin.commandPrefix = commandPrefix ? commandPrefix : CorePlugin.commandPrefix;
   }
 
-  private static CommandBucket = new Map<string, Command>();
+  private static CommandBucket: {[key: string]: Command} = {};
 
   private static commandPrefix = '!';
 
@@ -46,11 +47,11 @@ export class CorePlugin implements IPlugin{
   }
 
   public static commandAddHandler(call: string, command: Command): void {
-    call = CorePlugin.CommandBucket.has(call) ? `${command.srcPlugin}:${call}` : call;
-    if (CorePlugin.CommandBucket.has(call)) {
+    call = CorePlugin.CommandBucket.hasOwnProperty(call) ? `${command.srcPlugin}:${call}` : call;
+    if (CorePlugin.CommandBucket.hasOwnProperty(call)) {
       console.warn(`Command with call(${call}) from ${command.srcPlugin} could not be registered, duplicate call (skipped).`);
     } else {
-      CorePlugin.CommandBucket.set(call, command);
+      CorePlugin.CommandBucket[call]  = command;
     }
 
   }

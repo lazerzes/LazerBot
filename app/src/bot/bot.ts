@@ -6,11 +6,13 @@ import { Command } from '../command/command';
 export class Bot {
   private static onMessageHandlers: ((message: Message) => void)[];
 
-  private static storageBuckets: Map<string, {
-    shouldPersist: boolean,
-    bucket: Map<string, any>,
-    onAddHandler?: (key: string, obj: any) => void;
-  }>;
+  private static storageBuckets: {
+    [key: string]: {
+      shouldPersist: boolean,
+      bucket: { [key: string]: any }
+      onAddHandler?: (key: string, obj: any) => void;
+    }
+  };
 
   private static pluginIds: string[];
 
@@ -24,11 +26,7 @@ export class Bot {
   ) {
     Bot.client = new Client();
     this.token = token;
-    Bot.storageBuckets = new Map<string, {
-      bucket: Map<string, any>,
-      shouldPersist: boolean,
-      onAddHandler?: (key: string, obj: any) => void
-    }>();
+    Bot.storageBuckets = {};
     Bot.onMessageHandlers = [];
     Bot.pluginIds = [];
     this.loadPlugin(new CorePlugin(commandPrefix));
@@ -91,7 +89,7 @@ export class Bot {
   private registerStorageBuckets(
     storageBuckets: {
       bucketId: string,
-      bucket: Map<string, any>,
+      bucket: { [key: string]: any }
       shouldPersist: boolean,
       onAddHandler?: (key: string, obj: any) => void
     }[]
@@ -99,18 +97,18 @@ export class Bot {
 
     storageBuckets.forEach((storageBucket: {
       bucketId: string,
-      bucket: Map<string, any>,
+      bucket: { [key: string]: any }
       shouldPersist: boolean,
       onAddHandler?: (key: string, obj: any) => void
     }) => {
-      if (Bot.storageBuckets.has(storageBucket.bucketId)) {
+      if (Bot.storageBuckets.hasOwnProperty(storageBucket.bucketId)) {
         throw new Error(`Duplicate Bucket Ids are not allowed, ${storageBucket.bucketId} is already taken`);
       } else {
-        Bot.storageBuckets.set(storageBucket.bucketId, {
+        Bot.storageBuckets[storageBucket.bucketId] = {
           bucket: storageBucket.bucket,
           shouldPersist: storageBucket.shouldPersist,
           onAddHandler: storageBucket.onAddHandler
-        });
+        };
       }
 
     });
@@ -125,7 +123,7 @@ export class Bot {
   }
 
   private addDataToBucket(bucketId: string, dataId: string, data: any, options?: { failIfNoBucket?: boolean }): void {
-    if (!Bot.storageBuckets.has(bucketId)) {
+    if (!Bot.storageBuckets.hasOwnProperty(bucketId)) {
       if (options?.failIfNoBucket) {
         throw new Error(`Could not add data to ${bucketId}, does not exist.`);
       } else {
@@ -134,12 +132,12 @@ export class Bot {
       }
     }
 
-    const bucket = Bot.storageBuckets.get(bucketId);
-    if (bucket?.onAddHandler) {
+    const bucket = Bot.storageBuckets[bucketId];
+    if (bucket.onAddHandler) {
       bucket.onAddHandler(dataId, data);
     } else {
-      if (!bucket?.bucket.has(dataId)) {
-        bucket?.bucket.set(dataId, data);
+      if (!bucket.bucket.hasOwnProperty(dataId)) {
+        bucket.bucket[dataId] = data;
       } else {
         console.warn(`Could not add data(${dataId}) to ${bucketId}, duplicate dataId. (skipped)`);
       }
@@ -149,17 +147,12 @@ export class Bot {
 
   public savePersistentData(path: string): void {
 
-    const persist: { [key: string]: Map<string, any> } = {};
+    const persist: { [key: string]: object } = {};
 
+    Object.keys(Bot.storageBuckets).forEach((key: string) => {
 
-    Bot.storageBuckets.forEach((
-      value: {
-        shouldPersist: boolean,
-        bucket: Map<string, any>,
-        onAddHandler?: (key: string, obj: any) => void
-      },
-      key: string
-    ) => {
+      const value = Bot.storageBuckets[key];
+
       if (value.shouldPersist) {
         persist[key] = value.bucket;
       }

@@ -5,7 +5,7 @@ import { IPlugin } from '../../bot/plugin.interface';
 
 export class AdminPlugin implements IPlugin {
 
-  private static persistBucket = new Map<string, string>();
+  private static persistBucket: {[key: string]: any} = {};
 
   pluginId: string;
   commands: Command[];
@@ -46,7 +46,7 @@ export class AdminPlugin implements IPlugin {
   persistCommand(message: Message, args: string[]): void {
 
     if (args.length >= 3 ) {
-      AdminPlugin.persistBucket.set(args[1], args[2]);
+      AdminPlugin.persistBucket[args[1]] =  args[2];
     }
 
     message.channel.send({
