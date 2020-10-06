@@ -42,5 +42,6 @@ function main(): void {
 }
 
 function doDataPersist(bot: Bot): void {
+  console.log('\nsaving persistent data...');
   bot.savePersistentData(persistFile);
 }
