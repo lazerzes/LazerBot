@@ -34,6 +34,8 @@ export class Bot {
 
   public onMessage(message: Message): void {
     
+    console.log('message received', message.content);
+
     Bot.onMessageHandlers.forEach((callback: (message: Message) => void) => {
       callback(message);
     });

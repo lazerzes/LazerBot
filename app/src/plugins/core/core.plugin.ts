@@ -29,6 +29,7 @@ export class CorePlugin implements IPlugin{
 
 
   public static commandHandler(message: Message): void {
+    console.log('in command handler');
     if (message.content.slice(0, CorePlugin.commandPrefix.length) === CorePlugin.commandPrefix) {
       const args = message.content.match(/(".*?"|[^"\s]+)+(?=\s*|\s*$)/g);
       const command = CorePlugin.commandFinder(args[0].slice(CorePlugin.commandPrefix.length));
