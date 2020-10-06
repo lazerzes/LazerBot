@@ -1,4 +1,3 @@
-import { Command } from './../../command/command';
 import { Message } from 'discord.js';
 import { Command } from '../../command/command';
 import { IPlugin } from './../../bot/plugin.interface';
