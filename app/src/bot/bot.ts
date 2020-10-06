@@ -165,6 +165,8 @@ export class Bot {
       }
     });
 
+    console.log('pre write', persist);
+
     const fs = require('fs');
     fs.writeFileSync(path, JSON.stringify(persist, null, 2));
     console.log('wrote', JSON.stringify(persist, null, 2));
