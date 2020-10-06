@@ -125,9 +125,9 @@ export class Bot {
   private addDataToBucket(bucketId: string, dataId: string, data: any, options?: { failIfNoBucket?: boolean }): void {
     if (!Bot.storageBuckets.hasOwnProperty(bucketId)) {
       if (options?.failIfNoBucket) {
-        throw new Error(`Could not add data to ${bucketId}, does not exist.`);
+        throw new Error(`Could not add data to bucket(${bucketId}), does not exist.`);
       } else {
-        console.warn(`Could not add data to ${bucketId}, does not exist. (skipped)`);
+        console.warn(`Could not add data to bucket(${bucketId}), does not exist. (skipped)`);
         return;
       }
     }
@@ -146,7 +146,7 @@ export class Bot {
   }
 
   public savePersistentData(path: string): void {
-
+    console.log ('\nsaving persistent data...');
     const persist: { [key: string]: object } = {};
 
     Object.keys(Bot.storageBuckets).forEach((key: string) => {
@@ -158,11 +158,9 @@ export class Bot {
       }
     });
 
-    console.log('pre write', persist);
-
     const fs = require('fs');
     fs.writeFileSync(path, JSON.stringify(persist, null, 2));
-    console.log('wrote', JSON.stringify(persist, null, 2));
+    console.log('persistent data saved');
 
   }
 
