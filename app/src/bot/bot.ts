@@ -166,20 +166,15 @@ export class Bot {
     });
 
     const fs = require('fs');
-    fs.writeFile(path, JSON.stringify(persist, null, 2), (err: any) => {
-      if (err) { console.error(err); }
-      console.log('Data written to file');
-    });
+    fs.writeFileSync(path, JSON.stringify(persist, null, 2));
 
   }
 
   public loadPersistentData(path: string): void {
     const fs = require('fs');
-    fs.readFile(path, (err: any, data: any) => {
-      if (err) { return; }
-      const persist = JSON.parse(data);
-      console.log(persist);
-    });
+    const rawData = fs.readFileSync(path);
+    const parsed = JSON.parse(rawData);
+    console.log(parsed);
   }
 
 }
