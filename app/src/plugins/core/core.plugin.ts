@@ -23,7 +23,7 @@ export class CorePlugin implements IPlugin{
       bucket: CorePlugin.CommandBucket,
       shouldPersist: false,
       onAddHandler: CorePlugin.commandAddHandler,
-    }
+    },
   ];
 
   onMessageHandlers = [CorePlugin.commandHandler];
