@@ -1,8 +1,11 @@
 import { Bot } from './bot/bot';
 import { AdminPlugin } from './plugins/admin/admin.plugin';
 
+const persistFile = 'persist.json';
+
 require('dotenv').config();
 main();
+
 
 function main(): void {
 
@@ -28,6 +31,8 @@ function main(): void {
 
   bot.setup();
 
+  bot.loadPersistentData(persistFile);
+
   bot.login().then(
     () => console.log('logged in')
   ).catch(
@@ -37,5 +42,5 @@ function main(): void {
 }
 
 function doDataPersist(bot: Bot): void {
-  bot.savePersistentData('');
+  bot.savePersistentData(persistFile);
 }

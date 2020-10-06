@@ -151,24 +151,32 @@ export class Bot {
 
     const persist: { [key: string]: Map<string, any>} = {};
 
-    Array.from(Bot.storageBuckets.entries()).forEach(
-      ((value: [string, {
-        shouldPersist: boolean,
-        bucket: Map<string, any>
-        onAddHandler?: (key: string, obj: any) => void
-      }]) => {
-        if (value[1].shouldPersist) {
-          persist[value[0]] = value[1].bucket;
-        }
-      })
-    );
 
-    console.log('final persist', persist);
+    Bot.storageBuckets.forEach((
+      value: {
+        shouldPersist: boolean,
+        bucket: Map<string, any>,
+        onAddHandler?: (key: string, obj: any) => void
+      },
+      key: string
+    ) => {
+      if (value.shouldPersist) {
+        persist[key] = value.bucket;
+      }
+    });
+
+    const fs = require('fs');
+    fs.writeFileSync(path, JSON.stringify(persist));
 
   }
 
   public loadPersistentData(path: string): void {
-
+    const fs = require('fs');
+    fs.readFile(path, (err: any, data: any) => {
+      if (err) { return; }
+      const persist = JSON.parse(data);
+      console.log(persist);
+  });
   }
 
 }
