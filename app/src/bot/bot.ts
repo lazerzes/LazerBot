@@ -170,8 +170,12 @@ export class Bot {
     try {
       const fs = require('fs');
       const rawData = fs.readFileSync(path);
-      const parsed = JSON.parse(rawData);
-      console.log(parsed);
+      const persist = JSON.parse(rawData);
+      Object.keys(persist).forEach((bucketId: string) => {
+        Object.keys(persist[bucketId]).forEach((dataId: string) => {
+          this.addDataToBucket(bucketId, dataId, (persist[bucketId])[dataId]);
+        });
+      });
     } catch (err) {
       // pass
     }
