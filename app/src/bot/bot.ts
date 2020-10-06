@@ -149,7 +149,7 @@ export class Bot {
 
   public savePersistentData(path: string): void {
 
-    const persist: { [key: string]: Map<string, any>} = {};
+    const persist: { [key: string]: Map<string, any> } = {};
 
 
     Bot.storageBuckets.forEach((
@@ -166,7 +166,10 @@ export class Bot {
     });
 
     const fs = require('fs');
-    fs.writeFileSync(path, JSON.stringify(persist));
+    fs.writeFile(path, JSON.stringify(persist, null, 2), (err: any) => {
+      if (err) { throw err; }
+      console.log('Data written to file');
+    });
 
   }
 
@@ -176,7 +179,7 @@ export class Bot {
       if (err) { return; }
       const persist = JSON.parse(data);
       console.log(persist);
-  });
+    });
   }
 
 }
