@@ -56,7 +56,7 @@ export class Bot {
           console.log('Logged In!');
         }
       ).catch(
-        (error) => console.log('Error While Logging I:n \n', error)
+        (error) => console.log('Error While Logging In \n', error)
       );
     }
   }
