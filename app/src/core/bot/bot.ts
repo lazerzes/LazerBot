@@ -12,15 +12,14 @@ import { Command } from '../../api/command/command';
 
 export class Bot {
 
-  private client: Client = new Client();
+  private static client: Client = new Client();
+
+  private static botState: BotState;
+  private static bucketManager: BucketManager = new BucketManager();
+  private static eventManager: EventManager;
 
   private readonly botConfig: BotConfig;
-  private botState: BotState;
 
-
-  private bucketManager: BucketManager = new BucketManager();
-
-  private eventManager: EventManager;
 
   constructor(
     botConfig: BotConfig,
@@ -28,9 +27,9 @@ export class Bot {
 
     this.botConfig = botConfig;
 
-    this.botState = new BotState();
+    Bot.botState = new BotState();
 
-    this.eventManager = new EventManager();
+    Bot.eventManager = new EventManager();
 
   }
 
@@ -38,7 +37,7 @@ export class Bot {
   //#region bot events
 
   public setup(plugins: IPlugin[]): void {
-    if (!this.botState.isBotRunning()) {
+    if (!Bot.botState.isBotRunning()) {
       this.loadPlugin(new CorePlugin(this.botConfig.commandPrefix));
       this.loadPlugins(plugins);
       this.loadPersistentData();
@@ -47,11 +46,11 @@ export class Bot {
   }
 
   public start(): void {
-    if (!this.botState.isBotRunning()) {
-      this.client.login(this.botConfig.token).then(
+    if (!Bot.botState.isBotRunning()) {
+      Bot.client.login(this.botConfig.token).then(
         () => {
           console.log('Logged In!');
-          this.botState.setBotRunning(true);
+          Bot.botState.setBotRunning(true);
         }
       ).catch(
         (error) => console.log('Error While Logging In \n', error)
@@ -60,7 +59,7 @@ export class Bot {
   }
 
   public stop(): void {
-    this.botState.setBotRunning(false);
+    Bot.botState.setBotRunning(false);
 
     this.savePersistentData();
 
@@ -73,24 +72,24 @@ export class Bot {
 
   private loadPlugin(plugin: IPlugin): void {
 
-    if (this.botState.isPluginRegistered(plugin.pluginId)) {
+    if (Bot.botState.isPluginRegistered(plugin.pluginId)) {
       throw new Error(`Duplicate plugin id (${plugin.pluginId}).`);
     }
 
-    this.botState.addPlugin(plugin.pluginId);
+    Bot.botState.addPlugin(plugin.pluginId);
 
     if (plugin.storageBuckets) {
-      this.bucketManager.addBuckets(plugin.storageBuckets);
+      Bot.bucketManager.addBuckets(plugin.storageBuckets);
     }
 
     if (plugin.onMessageHandlers) {
-      this.eventManager.registerOnMessageHandlers(plugin.onMessageHandlers);
+      Bot.eventManager.registerOnMessageHandlers(plugin.onMessageHandlers);
     }
 
     if (plugin.commands) {
       plugin.commands.forEach((command: Command) => {
         command = {...command, srcPlugin: plugin.pluginId};
-        this.bucketManager.addDataToBucket('command', command.call, command);
+        Bot.bucketManager.addDataToBucket('command', command.call, command);
       });
     }
 
@@ -108,7 +107,7 @@ export class Bot {
 
   private registerEvents(): void {
 
-    this.client.on('message', this.onMessage);
+    Bot.client.on('message', this.onMessage);
 
   }
 
@@ -118,8 +117,8 @@ export class Bot {
       return;
     }
 
-    const handlerPromises: Promise<void>[] = this.eventManager.getOnMessageHandlers()
-      .map((messageHandler: MessageHandler) => messageHandler(message, this.bucketManager));
+    const handlerPromises: Promise<void>[] = Bot.eventManager.getOnMessageHandlers()
+      .map((messageHandler: MessageHandler) => messageHandler(message, Bot.bucketManager));
 
 
     if (handlerPromises.length > 0) {
@@ -134,7 +133,7 @@ export class Bot {
 
   private savePersistentData(): void {
 
-    const persist = this.bucketManager.getPersistData();
+    const persist = Bot.bucketManager.getPersistData();
     fs.writeFileSync(this.botConfig.dataPersistPath, JSON.stringify(persist, null, 2));
 
   }
@@ -145,7 +144,7 @@ export class Bot {
       const rawData = fs.readFileSync(this.botConfig.dataPersistPath, { encoding: 'utf-8' });
       const persist = JSON.parse(rawData);
 
-      this.bucketManager.loadPersistData(persist);
+      Bot.bucketManager.loadPersistData(persist);
 
     } catch (err) {
       // pass
