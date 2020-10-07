@@ -6,6 +6,12 @@ import { BucketManager } from '../../api/bucket/bucket.manager';
 
 export class CorePlugin implements IPlugin{
 
+  constructor(
+    commandPrefix: string
+  ) {
+    CorePlugin.commandPrefix = commandPrefix;
+  }
+
 
   private static commandPrefix = '!';
   private static commandBucket: {[key: string]: Command} = {};
@@ -22,10 +28,9 @@ export class CorePlugin implements IPlugin{
 
   onMessageHandlers = [this.commandHandler];
 
-  constructor(
-    commandPrefix: string
-  ) {
-    CorePlugin.commandPrefix = commandPrefix;
+  public static commandFinder(call: string): Command | undefined {
+    const command = CorePlugin.commandBucket[call] ?? undefined;
+    return command?.redirect ? CorePlugin.commandFinder(command.redirect) : command;
   }
 
 
@@ -33,17 +38,12 @@ export class CorePlugin implements IPlugin{
   private async commandHandler(message: Message, bucketManager: BucketManager): Promise<void> {
     if (message.content.slice(0, CorePlugin.commandPrefix.length) === CorePlugin.commandPrefix) {
       const args = message.content.match(/(".*?"|[^"\s]+)+(?=\s*|\s*$)/g) ?? [];
-      const command = this.commandFinder(args[0].slice(CorePlugin.commandPrefix.length));
+      const command = CorePlugin.commandFinder(args[0].slice(CorePlugin.commandPrefix.length));
       const runner = command?.runner;
       if (runner) {
         await runner(message, bucketManager);
       }
     }
-  }
-
-  public commandFinder(call: string): Command | undefined {
-    const command = CorePlugin.commandBucket[call] ?? undefined;
-    return command?.redirect ? this.commandFinder(command.redirect) : command;
   }
 
   private commandAddHandler(call: string, command: Command): void {
