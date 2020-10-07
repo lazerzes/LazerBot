@@ -1,20 +1,21 @@
+import { Bucket } from './../bucket/bucket';
 import { Message } from 'discord.js';
 import { Command } from '../command/command';
+import { BucketManager } from '../bucket/bucket.manager';
 
 export interface IPlugin {
 
   pluginId: string;
+
   storageBuckets?: {
     bucketId: string;
-    bucket: {[key: string]: any};
-    shouldPersist: boolean;
-    onAddHandler?: (key: string, object: any) => void;
+    bucket: Bucket;
   }[];
 
   // Core Plugin
   commands?: Command[];
 
   // Event Handlers
-  onMessageHandlers?: ((message: Message) => void)[];
+  onMessageHandlers?: ((message: Message, bucketManager: BucketManager) => void)[];
 
 }

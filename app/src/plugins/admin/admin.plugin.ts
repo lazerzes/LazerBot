@@ -1,7 +1,8 @@
-import { Client, Message } from 'discord.js';
-import { Command } from '../../command/command';
+import { BucketManager } from './../../api/bucket/bucket.manager';
+import { Message } from 'discord.js';
+import { Command } from '../../api/command/command';
 
-import { IPlugin } from '../../bot/plugin.interface';
+import { IPlugin } from '../../api/plugin/plugin.interface';
 
 export class AdminPlugin implements IPlugin {
 
@@ -23,7 +24,7 @@ export class AdminPlugin implements IPlugin {
 
   }
 
-  pingCommand(message: Message, args: string[]): void {
+  pingCommand(message: Message, bucketManager: BucketManager): void {
     message.channel.send( {
       content: 'pong'
     });

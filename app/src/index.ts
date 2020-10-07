@@ -1,4 +1,4 @@
-import { Bot } from './bot/bot';
+import { Bot } from './core/bot/bot';
 import { AdminPlugin } from './plugins/admin/admin.plugin';
 
 const persistFile = 'bot-persist.json';
@@ -10,37 +10,24 @@ main();
 function main(): void {
 
   process.on('SIGINT', () => {
-
-    doDataPersist(bot);
-
+    bot.stop();
     process.exit();
   });
 
   process.on('beforeExit', () => {
-
-    doDataPersist(bot);
-
+    bot.stop();
     process.exit();
   });
 
-  const bot = new Bot(process?.env?.TOKEN ?? 'no token', process?.env?.COMMAND_PREFIX);
-
-  bot.loadPlugins([
-    new AdminPlugin(),
-  ]);
-
-  bot.setup();
-
-  bot.loadPersistentData(persistFile);
-
-  bot.login().then(
-    () => console.log('logged in')
-  ).catch(
-    (error) => console.log('error while logging in', error)
+  const bot = new Bot(
+    process?.env?.TOKEN ?? 'no token',
+    process?.env?.PERSIST_PATH ?? 'bot-persist.json',
+    process?.env?.COMMAND_PREFIX ?? '!'
   );
 
-}
+  bot.setup([
+    new AdminPlugin(),
+  ]);
+  bot.start();
 
-function doDataPersist(bot: Bot): void {
-  bot.savePersistentData(persistFile);
 }

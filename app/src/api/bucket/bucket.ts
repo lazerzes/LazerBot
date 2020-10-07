@@ -22,7 +22,7 @@ export class Bucket {
     }
   }
 
-  public set(key: string, data: string): void {
+  public set(key: string, data: any): void {
 
     if (this.onAddHandler) {
       this.onAddHandler(key, data);

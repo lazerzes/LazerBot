@@ -9,7 +9,7 @@ export class BucketManager {
 
   public addBucket(bucketId: string, bucket: Bucket): void {
 
-    if (this.buckets.hasOwnProperty(bucketId)) {
+    if (this.hasBucket(bucketId)) {
       throw new Error(`Unable to add bucket(${bucketId}), duplicate id`);
     }
 
@@ -23,6 +23,10 @@ export class BucketManager {
 
   public getBucket(bucketId: string): Bucket | undefined {
     return this.buckets[bucketId] ?? undefined;
+  }
+
+  public addDataToBucket(bucketId: string, dataId: string, data: any): void {
+    this.getBucket(bucketId)?.set(dataId, data);
   }
 
   public getPersistData(): {[key: string]: any} {
