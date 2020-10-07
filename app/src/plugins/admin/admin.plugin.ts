@@ -24,10 +24,9 @@ export class AdminPlugin implements IPlugin {
 
   }
 
-  pingCommand(message: Message, bucketManager: BucketManager): void {
-    message.channel.send( {
-      content: 'pong'
-    });
+  async pingCommand(message: Message, bucketManager: BucketManager): Promise<void> {
+    const m = await message.channel.send('Ping?');
+    m.edit(`Pong! Latency is ${m.createdTimestamp - message.createdTimestamp}ms.`);
   }
 
 }

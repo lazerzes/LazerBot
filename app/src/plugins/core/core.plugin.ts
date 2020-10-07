@@ -30,13 +30,13 @@ export class CorePlugin implements IPlugin{
 
 
 
-  private commandHandler(message: Message, bucketManager: BucketManager): void {
+  private async commandHandler(message: Message, bucketManager: BucketManager): Promise<void> {
     if (message.content.slice(0, CorePlugin.commandPrefix.length) === CorePlugin.commandPrefix) {
       const args = message.content.match(/(".*?"|[^"\s]+)+(?=\s*|\s*$)/g) ?? [];
       const command = this.commandFinder(args[0].slice(CorePlugin.commandPrefix.length));
       const runner = command?.runner;
       if (runner) {
-        runner(message, bucketManager);
+        await runner(message, bucketManager);
       }
     }
   }

@@ -1,48 +1,45 @@
+import { MessageHandler } from './../../api/event/event-handler.types';
+import { EventManager } from './../../api/event/event.manager';
+import { BotConfig } from './bot.config';
 import { CorePlugin } from './../../plugins/core/core.plugin';
 import { IPlugin } from './../../api/plugin/plugin.interface';
 import { BucketManager } from './../../api/bucket/bucket.manager';
 import { Client, Message } from 'discord.js';
 
 import * as fs from 'fs';
+import { BotState } from './bot.state';
+import { Command } from '../../api/command/command';
 
 export class Bot {
 
   private client: Client = new Client();
 
-  private readonly token: string;
-  private readonly commandPrefix: string;
-  private readonly dataPersistPath: string;
+  private readonly botConfig: BotConfig;
+  private botState: BotState;
 
-
-  private loadedPlugins: string[] = [];
 
   private bucketManager: BucketManager = new BucketManager();
 
-  private onMessageHandlers: ((message: Message, bucketManager: BucketManager) => void)[];
-
-  private clientRunning = false;
-
-  private clientUserId = '';
+  private eventManager: EventManager;
 
   constructor(
-    token: string,
-    dataPersistPath: string,
-    commandPrefix: string,
+    botConfig: BotConfig,
   ) {
-    this.token = token;
 
-    this.dataPersistPath = dataPersistPath;
-    this.commandPrefix = commandPrefix;
+    this.botConfig = botConfig;
 
-    this.onMessageHandlers = [];
+    this.botState = new BotState();
+
+    this.eventManager = new EventManager();
+
   }
 
 
   //#region bot events
 
   public setup(plugins: IPlugin[]): void {
-    if (!this.clientRunning) {
-      this.loadPlugin(new CorePlugin(this.commandPrefix))
+    if (!this.botState.isBotRunning()) {
+      this.loadPlugin(new CorePlugin(this.botConfig.commandPrefix));
       this.loadPlugins(plugins);
       this.loadPersistentData();
       this.registerEvents();
@@ -50,10 +47,11 @@ export class Bot {
   }
 
   public start(): void {
-    if (!this.clientRunning) {
-      this.client.login(this.token).then(
+    if (!this.botState.isBotRunning()) {
+      this.client.login(this.botConfig.token).then(
         () => {
           console.log('Logged In!');
+          this.botState.setBotRunning(true);
         }
       ).catch(
         (error) => console.log('Error While Logging In \n', error)
@@ -62,7 +60,7 @@ export class Bot {
   }
 
   public stop(): void {
-    this.clientRunning = false;
+    this.botState.setBotRunning(false);
 
     this.savePersistentData();
 
@@ -75,11 +73,26 @@ export class Bot {
 
   private loadPlugin(plugin: IPlugin): void {
 
-    if (this.loadedPlugins.includes(plugin.pluginId)) {
+    if (this.botState.isPluginRegistered(plugin.pluginId)) {
       throw new Error(`Duplicate plugin id (${plugin.pluginId}).`);
     }
 
-    this.loadedPlugins.push(plugin.pluginId);
+    this.botState.addPlugin(plugin.pluginId);
+
+    if (plugin.storageBuckets) {
+      this.bucketManager.addBuckets(plugin.storageBuckets);
+    }
+
+    if (plugin.onMessageHandlers) {
+      this.eventManager.registerOnMessageHandlers(plugin.onMessageHandlers);
+    }
+
+    if (plugin.commands) {
+      plugin.commands.forEach((command: Command) => {
+        command = {...command, srcPlugin: plugin.pluginId};
+        this.bucketManager.addDataToBucket('command', command.call, command);
+      });
+    }
 
     console.log(`Plugin Loaded! (${plugin.pluginId})`);
 
@@ -99,17 +112,19 @@ export class Bot {
 
   }
 
-  private onMessage(message: Message): void {
+  private async onMessage(message: Message): Promise<void> {
 
     if (message.author.bot) {
       return;
     }
 
-    this.onMessageHandlers.forEach(
-      (callback: (message: Message, bucketManager: BucketManager) => void) => {
-        callback(message, this.bucketManager);
-      }
-    );
+    const handlerPromises: Promise<void>[] = this.eventManager.getOnMessageHandlers()
+      .map((messageHandler: MessageHandler) => messageHandler(message, this.bucketManager));
+
+
+    if (handlerPromises.length > 0) {
+      await Promise.all(handlerPromises);
+    }
 
   }
 
@@ -120,14 +135,14 @@ export class Bot {
   private savePersistentData(): void {
 
     const persist = this.bucketManager.getPersistData();
-    fs.writeFileSync(this.dataPersistPath, JSON.stringify(persist, null, 2));
+    fs.writeFileSync(this.botConfig.dataPersistPath, JSON.stringify(persist, null, 2));
 
   }
 
   private loadPersistentData(): void {
 
     try {
-      const rawData = fs.readFileSync(this.dataPersistPath, { encoding: 'utf-8' });
+      const rawData = fs.readFileSync(this.botConfig.dataPersistPath, { encoding: 'utf-8' });
       const persist = JSON.parse(rawData);
 
       this.bucketManager.loadPersistData(persist);

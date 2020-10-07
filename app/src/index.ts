@@ -20,9 +20,11 @@ function main(): void {
   });
 
   const bot = new Bot(
-    process?.env?.TOKEN ?? 'no token',
-    process?.env?.PERSIST_PATH ?? 'bot-persist.json',
-    process?.env?.COMMAND_PREFIX ?? '!'
+    {
+      token: process?.env?.TOKEN ?? 'no token',
+      dataPersistPath: process?.env?.PERSIST_PATH ?? 'bot-persist.json',
+      commandPrefix: process?.env?.COMMAND_PREFIX ?? '!'
+    }
   );
 
   bot.setup([

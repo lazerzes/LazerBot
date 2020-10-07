@@ -9,6 +9,6 @@ export interface Command {
 
   srcPlugin?: string;
 
-  runner?(message: Message, bucketManager: BucketManager): void;
+  runner?(message: Message, bucketManager: BucketManager): Promise<void>;
 
 }

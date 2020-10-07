@@ -1,7 +1,6 @@
 import { Bucket } from './../bucket/bucket';
-import { Message } from 'discord.js';
 import { Command } from '../command/command';
-import { BucketManager } from '../bucket/bucket.manager';
+import { MessageHandler } from '../event/event-handler.types';
 
 export interface IPlugin {
 
@@ -16,6 +15,6 @@ export interface IPlugin {
   commands?: Command[];
 
   // Event Handlers
-  onMessageHandlers?: ((message: Message, bucketManager: BucketManager) => void)[];
+  onMessageHandlers?: MessageHandler[];
 
 }
