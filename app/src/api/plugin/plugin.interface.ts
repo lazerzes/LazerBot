@@ -11,6 +11,8 @@ export interface IPlugin {
     bucket: Bucket;
   }[];
 
+  intervalJobs?: NodeJS.Timeout[];
+
   // Core Plugin
   commands?: Command[];
 

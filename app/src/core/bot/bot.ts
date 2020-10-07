@@ -18,6 +18,8 @@ export class Bot {
   private static bucketManager: BucketManager = new BucketManager();
   private static eventManager: EventManager;
 
+  private static intervalJobs: NodeJS.Timeout[] = [];
+
   private readonly botConfig: BotConfig;
 
 
@@ -61,6 +63,10 @@ export class Bot {
   public stop(): void {
     Bot.botState.setBotRunning(false);
 
+    Bot.intervalJobs.forEach((job: NodeJS.Timeout) => {
+      clearInterval(job);
+    });
+
     this.savePersistentData();
 
   }
@@ -84,6 +90,10 @@ export class Bot {
 
     if (plugin.onMessageHandlers) {
       Bot.eventManager.registerOnMessageHandlers(plugin.onMessageHandlers);
+    }
+
+    if (plugin.intervalJobs) {
+      Bot.intervalJobs.push(...plugin.intervalJobs);
     }
 
     if (plugin.commands) {

@@ -26,6 +26,8 @@ export class CorePlugin implements IPlugin{
     },
   ];
 
+  intervalJobs: NodeJS.Timeout[] = [];
+
   onMessageHandlers = [this.commandHandler];
 
   public static commandFinder(call: string): Command | undefined {
