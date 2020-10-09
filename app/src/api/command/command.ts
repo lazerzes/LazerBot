@@ -23,4 +23,8 @@ export class Command {
     this.runner = options?.runner;
   }
 
+  static isCommand(check: unknown): check is Command {
+    return (<Command>check).call !== undefined;
+  }
+
 }

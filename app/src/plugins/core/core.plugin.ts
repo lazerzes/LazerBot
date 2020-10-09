@@ -44,7 +44,7 @@ export class CorePlugin implements IPlugin {
       const command = CorePlugin.commandFinder(args[0].slice(CorePlugin.commandPrefix.length));
       const runner = command?.runner;
       if (runner) {
-        if (runner.length === 1){
+        if (runner.length === 1) {
           (runner as CommandRunner)(message);
         } else {
           (runner as CommandRunnerBucket)(message, bucketManager);
@@ -55,16 +55,21 @@ export class CorePlugin implements IPlugin {
 
   private commandAddHandler(call: string, command: unknown): void {
 
-    if (command instanceof Command) {
+
+    if (Command.isCommand(command)) {
+
       call = CorePlugin.commandBucket[call] !== undefined ? `${command?.srcPlugin}:${call}` : call;
       if (CorePlugin.commandBucket[call] !== undefined) {
         console.warn(`Command with call(${call}) from ${command.srcPlugin} could not be registered, duplicate call (skipped).`);
       } else {
-        CorePlugin.commandBucket[call] = command as Command;
+        CorePlugin.commandBucket[call] = command;
       }
+
     } else {
-      throw new Error('Could not add to commandBucket, not a Command!');
+      throw new Error('Could not add data to commands, not a Command');
     }
+
+
 
 
   }
