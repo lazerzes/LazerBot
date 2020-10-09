@@ -1,4 +1,3 @@
-import { BucketManager } from './../../api/bucket/bucket.manager';
 import { Message } from 'discord.js';
 import { Command } from '../../api/command/command';
 
