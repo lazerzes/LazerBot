@@ -69,9 +69,6 @@ export class CorePlugin implements IPlugin {
       throw new Error('Could not add data to commands, not a Command');
     }
 
-
-
-
   }
 
 }
