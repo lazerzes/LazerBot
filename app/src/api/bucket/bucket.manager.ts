@@ -63,7 +63,7 @@ export class BucketManager {
    * @param dataId the id of the data you want to add
    * @param data the data you want to add
    */
-  public addDataToBucket(bucketId: string, dataId: string, data: any): void {
+  public addDataToBucket(bucketId: string, dataId: string, data: unknown): void {
     this.getBucket(bucketId)?.set(dataId, data);
   }
 
@@ -72,7 +72,7 @@ export class BucketManager {
    *
    * @returns the data to be persisted.
    */
-  public getPersistData(): {[key: string]: any} {
+  public getPersistData(): {[key: string]: unknown} {
 
     return Object.keys(this.buckets)
       .map(key => {
@@ -87,9 +87,12 @@ export class BucketManager {
    *
    * @param persist the data to load
    */
-  public loadPersistData(persist: any): void {
+  public loadPersistData(persist: {[key: string]: unknown}): void {
+
     Object.keys(persist).forEach((key: string) => {
-      this.getBucket(key)?.loadFromPersist(persist[key]);
+      if(typeof persist[key] === "object") {
+        this.getBucket(key)?.loadFromPersist(persist as {[key: string]: unknown})
+      }
     });
   }
 

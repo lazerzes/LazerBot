@@ -1,9 +1,8 @@
 import { Bot } from './core/bot/bot';
 import { AdminPlugin } from './plugins/admin/admin.plugin';
+import * as dotenv from 'dotenv';
 
-const persistFile = 'bot-persist.json';
-
-require('dotenv').config();
+dotenv.config();
 main();
 
 

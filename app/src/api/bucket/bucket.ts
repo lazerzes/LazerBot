@@ -11,10 +11,10 @@
 export class Bucket {
 
   private shouldPersist: boolean;
-  private bucket: { [key: string]: any };
-  private onAddHandler?: (key: string, data: any) => void;
+  private bucket: { [key: string]: unknown };
+  private onAddHandler?: (key: string, data: unknown) => void;
 
-  constructor(data: { [key: string]: any }, shouldPersist: boolean, onAddHandler?: (key: string, data: any) => void) {
+  constructor(data: { [key: string]: unknown }, shouldPersist: boolean, onAddHandler?: (key: string, data: unknown) => void) {
     this.shouldPersist = shouldPersist;
     this.bucket = data;
     this.onAddHandler = onAddHandler;
@@ -25,7 +25,7 @@ export class Bucket {
    *
    * @returns the bucket or undefined if the bucket should not persist
    */
-  public toPersist(): any | undefined {
+  public toPersist(): unknown | undefined {
     return this.shouldPersist ? this.bucket : undefined;
   }
 
@@ -33,7 +33,7 @@ export class Bucket {
    * Loads data into the bucket if the bucket persists
    * @param persistData the data to load
    */
-  public loadFromPersist(persistData: any): void {
+  public loadFromPersist(persistData: {[key: string]: unknown}): void {
     if (this.shouldPersist) {
       Object.keys(persistData).forEach((key: string) => {
         this.set(key, persistData[key]);
@@ -46,7 +46,7 @@ export class Bucket {
    * @param key the key to add the data at
    * @param data the data to add
    */
-  public set(key: string, data: any): void {
+  public set(key: string, data: unknown): void {
 
     if (this.onAddHandler) {
       this.onAddHandler(key, data);
@@ -62,7 +62,7 @@ export class Bucket {
    *
    * @returns the value at the key or undefined if no value is found
    */
-  public get(key: string): any | undefined {
+  public get(key: string): unknown | undefined {
     return this.bucket[key] ?? undefined;
   }
 

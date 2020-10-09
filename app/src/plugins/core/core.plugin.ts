@@ -1,6 +1,6 @@
+import { Command } from './../../api/command/command';
 import { Bucket } from './../../api/bucket/bucket';
 import { Message } from 'discord.js';
-import { Command } from '../../api/command/command';
 import { IPlugin } from '../../api/plugin/plugin.interface';
 import { BucketManager } from '../../api/bucket/bucket.manager';
 
@@ -48,12 +48,13 @@ export class CorePlugin implements IPlugin{
     }
   }
 
-  private commandAddHandler(call: string, command: Command): void {
-    call = CorePlugin.commandBucket.hasOwnProperty(call) ? `${command.srcPlugin}:${call}` : call;
-    if (CorePlugin.commandBucket.hasOwnProperty(call)) {
-      console.warn(`Command with call(${call}) from ${command.srcPlugin} could not be registered, duplicate call (skipped).`);
+  private commandAddHandler(call: string, command: unknown): void {
+
+    call = CorePlugin.commandBucket[call] !== undefined ? `${(command as Command)?.srcPlugin}:${call}` : call;
+    if (CorePlugin.commandBucket[call] !== undefined) {
+      console.warn(`Command with call(${call}) from ${(command as Command).srcPlugin} could not be registered, duplicate call (skipped).`);
     } else {
-      CorePlugin.commandBucket[call]  = command;
+      CorePlugin.commandBucket[call]  = command as Command;
     }
 
   }
