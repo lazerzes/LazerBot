@@ -14,7 +14,6 @@ export class BucketManager {
   public addBucket(bucketId: string, bucket: Bucket): void {
 
     if (this.hasBucket(bucketId)) {
-      console.log(this.buckets);
       throw new Error(`Unable to add bucket(${bucketId}), duplicate id`);
     }
 
